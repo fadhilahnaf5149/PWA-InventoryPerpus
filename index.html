@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="theme-color" content="#6b4f3a" />
+
+    <meta name="description" content="InLib - Sistem Inventaris Perpustakaan" />
+
+    <title>InLib - Inventaris Perpustakaan</title>
+
+    <link rel="manifest" href="manifest.json" />
+
+    <link rel="icon" type="image/png" href="icons/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- =====================================================
+         SPLASH SCREEN
+         ===================================================== -->
+
+    <div id="splashScreen" class="splash-screen">
+      <div class="splash-content">
+        <div class="splash-logo">
+          <span>📚</span>
+        </div>
+
+        <h1>InLib</h1>
+
+        <p class="splash-subtitle">Sistem Inventaris Perpustakaan</p>
+
+        <p class="splash-author">
+          Aplikasi Pengelolaan Inventaris Perpustakaan
+        </p>
+
+        <div class="loading">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         LOGIN SCREEN
+         ===================================================== -->
+
+    <div id="loginScreen" class="login-screen hidden">
+      <div class="login-card">
+        <div class="login-logo">📚</div>
+
+        <h1>Selamat Datang</h1>
+
+        <p class="login-subtitle">Masuk ke Sistem Inventaris Perpustakaan</p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginUsername"> Username </label>
+
+            <input
+              type="text"
+              id="loginUsername"
+              placeholder="Masukkan username"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="loginPassword"> Password </label>
+
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="loginPassword"
+                placeholder="Masukkan password"
+                autocomplete="current-password"
+                required
+              />
+
+              <button
+                type="button"
+                id="togglePassword"
+                class="password-toggle"
+                aria-label="Tampilkan password"
+              >
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <p id="loginError" class="login-error"></p>
+
+          <button type="submit" class="btn btn-primary login-button">
+            🔐 Masuk
+          </button>
+        </form>
+
+        <div class="login-info"></div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         APPLICATION
+         ===================================================== -->
+
+    <div id="app" class="app hidden">
+      <!-- SIDEBAR -->
+
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="brand-icon">📚</div>
+
+          <div>
+            <h1>InLib</h1>
+            <span>Library Inventory</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-page="dashboard">
+            <span>📊</span>
+            <span>Dashboard</span>
+          </button>
+
+          <button class="nav-item" data-page="inventory">
+            <span>📚</span>
+            <span>Inventaris</span>
+          </button>
+
+          <button class="nav-item" data-page="notifications">
+            <span>🔔</span>
+            <span>Notifikasi</span>
+            <span id="notificationBadge" class="nav-badge"> 0 </span>
+          </button>
+
+          <button class="nav-item" data-page="history">
+            <span>🕘</span>
+            <span>Riwayat</span>
+          </button>
+
+          <button class="nav-item" data-page="settings">
+            <span>⚙️</span>
+            <span>Pengaturan</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-user">
+          <div class="user-avatar">👤</div>
+
+          <div class="user-details">
+            <strong id="sidebarUserName"> User </strong>
+
+            <span id="sidebarUserRole"> Petugas </span>
+          </div>
+
+          <button id="logoutButton" class="logout-button" title="Logout">
+            🚪
+          </button>
+        </div>
+      </aside>
+
+      <!-- SIDEBAR OVERLAY -->
+
+      <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+      <!-- MAIN -->
+
+      <main class="main-content">
+        <!-- HEADER -->
+
+        <header class="header">
+          <div class="header-left">
+            <button id="menuButton" class="menu-button" aria-label="Menu">
+              ☰
+            </button>
+
+            <div>
+              <span class="header-small"> InLib </span>
+
+              <h2 class="header-title">Dashboard</h2>
+            </div>
+          </div>
+
+          <div class="header-right">
+            <div class="header-user">
+              <span class="header-user-icon"> 👤 </span>
+
+              <div>
+                <strong id="headerUserName"> User </strong>
+
+                <small id="headerUserRole"> Petugas </small>
+              </div>
+            </div>
+
+            <button
+              id="themeToggle"
+              class="icon-button"
+              title="Gunakan Dark Mode"
+            >
+              🌙
+            </button>
+          </div>
+        </header>
+
+        <!-- =================================================
+                 PAGES
+                 ================================================= -->
+
+        <div class="page-container">
+          <!-- =================================================
+                     DASHBOARD
+                     ================================================= -->
+
+          <section id="dashboardPage" class="page active-page">
+            <div class="page-heading">
+              <div>
+                <span class="eyebrow"> PERPUSTAKAAN </span>
+
+                <h2>Dashboard</h2>
+
+                <p>Pantau kondisi inventaris perpustakaan.</p>
+              </div>
+
+              <button class="btn btn-primary" data-page="add">
+                ➕ Tambah Inventaris
+              </button>
+            </div>
+
+            <!-- STATISTICS -->
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon">📚</div>
+
+                <div>
+                  <span>Total Barang</span>
+                  <strong id="totalItems">0</strong>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon good">✓</div>
+
+                <div>
+                  <span>Kondisi Baik</span>
+                  <strong id="goodItems">0</strong>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon warning">⚠</div>
+
+                <div>
+                  <span>Rusak Ringan</span>
+                  <strong id="minorItems">0</strong>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon danger">!</div>
+
+                <div>
+                  <span>Rusak Berat</span>
+                  <strong id="majorItems">0</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- ITEM STATISTICS -->
+
+            <div class="content-card item-statistics-card">
+              <div class="card-header">
+                <div>
+                  <h3>📦 Statistik Barang</h3>
+                  <p>Ringkasan data barang inventaris perpustakaan.</p>
+                </div>
+              </div>
+
+              <div class="item-statistics">
+                <!-- TOTAL JENIS -->
+                <div class="item-stat-card">
+                  <div class="item-stat-icon">📚</div>
+
+                  <div class="item-stat-info">
+                    <span>Total Jenis Barang</span>
+                    <strong id="totalItemTypes">0</strong>
+                  </div>
+                </div>
+
+                <!-- TOTAL UNIT -->
+                <div class="item-stat-card">
+                  <div class="item-stat-icon">📦</div>
+
+                  <div class="item-stat-info">
+                    <span>Total Unit Barang</span>
+                    <strong id="totalItemUnits">0</strong>
+                  </div>
+                </div>
+
+                <!-- STOK TERBANYAK -->
+                <div class="item-stat-card">
+                  <div class="item-stat-icon">🏆</div>
+
+                  <div class="item-stat-info">
+                    <span>Stok Terbanyak</span>
+                    <strong id="highestStockItem">-</strong>
+                  </div>
+                </div>
+
+                <!-- STOK RENDAH -->
+                <div class="item-stat-card">
+                  <div class="item-stat-icon">⚠️</div>
+
+                  <div class="item-stat-info">
+                    <span>Barang Stok Rendah</span>
+                    <strong id="lowStockCount">0</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ROOM STATISTICS -->
+
+            <div class="content-card room-statistics-card">
+              <div class="card-header">
+                <div>
+                  <h3>🏫 Statistik Ruang</h3>
+
+                  <p>Ringkasan inventaris berdasarkan ruangan.</p>
+                </div>
+              </div>
+
+              <div class="room-stat-summary">
+                <div class="room-summary-item">
+                  <span class="room-summary-icon"> 🏫 </span>
+
+                  <div>
+                    <span> Total Ruang </span>
+
+                    <strong id="totalRooms"> 0 </strong>
+                  </div>
+                </div>
+
+                <div class="room-summary-item">
+                  <span class="room-summary-icon"> 📚 </span>
+
+                  <div>
+                    <span> Ruang Berisi Inventaris </span>
+
+                    <strong id="occupiedRooms"> 0 </strong>
+                  </div>
+                </div>
+
+                <div class="room-summary-item">
+                  <span class="room-summary-icon"> ⚠️ </span>
+
+                  <div>
+                    <span> Ruang dengan Barang Rusak </span>
+
+                    <strong id="damagedRooms"> 0 </strong>
+                  </div>
+                </div>
+              </div>
+
+              <div id="roomStatistics" class="room-statistics"></div>
+            </div>
+
+            <!-- DASHBOARD GRID -->
+
+            <div class="dashboard-grid">
+              <!-- CONDITION -->
+
+              <div class="content-card">
+                <div class="card-header">
+                  <div>
+                    <h3>Kondisi Barang</h3>
+
+                    <p>Statistik kondisi inventaris.</p>
+                  </div>
+                </div>
+
+                <div id="conditionChart" class="condition-chart"></div>
+              </div>
+
+              <!-- LOW STOCK -->
+
+              <div class="content-card">
+                <div class="card-header">
+                  <div>
+                    <h3>⚠️ Stok Rendah</h3>
+
+                    <p>Barang dengan jumlah ≤ 2 unit.</p>
+                  </div>
+                </div>
+
+                <div id="lowStockList"></div>
+              </div>
+            </div>
+
+            <!-- RECENT -->
+
+            <div class="content-card">
+              <div class="card-header">
+                <div>
+                  <h3>Inventaris Terbaru</h3>
+
+                  <p>Data inventaris yang terakhir diperbarui.</p>
+                </div>
+
+                <button class="text-button" data-page="inventory">
+                  Lihat Semua →
+                </button>
+              </div>
+
+              <div id="recentInventory"></div>
+            </div>
+          </section>
+
+          <!-- =================================================
+                     INVENTORY
+                     ================================================= -->
+
+          <section id="inventoryPage" class="page">
+            <div class="page-heading">
+              <div>
+                <span class="eyebrow"> DATA </span>
+
+                <h2>Data Inventaris</h2>
+
+                <p>Kelola seluruh barang perpustakaan.</p>
+              </div>
+
+              <button class="btn btn-primary" data-page="add">
+                ➕ Tambah Inventaris
+              </button>
+            </div>
+
+            <!-- FILTER -->
+
+            <div class="filter-card">
+              <div class="search-wrapper">
+                <span> 🔍 </span>
+
+                <input
+                  type="search"
+                  id="searchInput"
+                  placeholder="Cari nama atau kode inventaris..."
+                />
+              </div>
+
+              <select id="roomFilter">
+                <option value="">Semua Ruangan</option>
+              </select>
+
+              <select id="conditionFilter">
+                <option value="">Semua Kondisi</option>
+
+                <option value="Baik">Baik</option>
+
+                <option value="Rusak Ringan">Rusak Ringan</option>
+
+                <option value="Rusak Berat">Rusak Berat</option>
+              </select>
+
+              <button id="resetFilter" class="btn btn-secondary">Reset</button>
+            </div>
+
+            <!-- INVENTORY LIST -->
+
+            <div id="inventoryList" class="inventory-grid"></div>
+          </section>
+
+          <!-- =================================================
+                     ADD / EDIT
+                     ================================================= -->
+
+          <section id="addPage" class="page">
+            <div class="page-heading">
+              <div>
+                <span class="eyebrow"> INVENTARIS </span>
+
+                <h2>Tambah Inventaris</h2>
+
+                <p>Masukkan data barang perpustakaan.</p>
+              </div>
+            </div>
+
+            <div class="form-layout">
+              <!-- FORM -->
+
+              <div class="content-card">
+                <form id="inventoryForm">
+                  <input type="hidden" id="editId" />
+
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label for="itemName"> Nama Barang </label>
+
+                      <input
+                        type="text"
+                        id="itemName"
+                        placeholder="Contoh: Rak Buku"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="itemCode"> Kode Inventaris </label>
+
+                      <input
+                        type="text"
+                        id="itemCode"
+                        placeholder="Contoh: INV-001"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="itemRoom"> Nama Ruangan </label>
+
+                      <input
+                        type="text"
+                        id="itemRoom"
+                        placeholder="Contoh: Ruang Baca"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="itemQuantity"> Jumlah Barang </label>
+
+                      <input
+                        type="number"
+                        id="itemQuantity"
+                        min="1"
+                        placeholder="Contoh: 5"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group full-width">
+                      <label for="itemCondition"> Kondisi Barang </label>
+
+                      <select id="itemCondition" required>
+                        <option value="">Pilih kondisi</option>
+
+                        <option value="Baik">Baik</option>
+
+                        <option value="Rusak Ringan">Rusak Ringan</option>
+
+                        <option value="Rusak Berat">Rusak Berat</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <button
+                      type="button"
+                      id="cancelForm"
+                      class="btn btn-secondary"
+                    >
+                      Batal
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                      💾 Simpan Data
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- PREVIEW -->
+
+              <div class="content-card preview-card">
+                <div class="card-header">
+                  <div>
+                    <h3>Preview</h3>
+
+                    <p>Tampilan data inventaris.</p>
+                  </div>
+                </div>
+
+                <article class="inventory-card preview-inventory">
+                  <div class="inventory-top">
+                    <div class="inventory-book">📚</div>
+
+                    <span
+                      id="previewCondition"
+                      class="recent-status status-good"
+                    >
+                      Belum dipilih
+                    </span>
+                  </div>
+
+                  <h3 id="previewName">Nama Barang</h3>
+
+                  <div id="previewCode" class="inventory-code">INV-000</div>
+
+                  <div class="inventory-details">
+                    <div class="inventory-detail">
+                      <span> Ruangan </span>
+
+                      <strong id="previewRoom"> Belum dipilih </strong>
+                    </div>
+
+                    <div class="inventory-detail">
+                      <span> Jumlah </span>
+
+                      <strong id="previewQuantity"> 0 unit </strong>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <!-- =================================================
+                     NOTIFICATIONS
+                     ================================================= -->
+
+          <section id="notificationsPage" class="page">
+            <div class="page-heading">
+              <div>
+                <span class="eyebrow"> ALERT </span>
+
+                <h2>Notifikasi</h2>
+
+                <p>Informasi barang yang membutuhkan perhatian.</p>
+              </div>
+            </div>
+
+            <div class="content-card">
+              <div id="notificationsList" class="notifications-page-list"></div>
+            </div>
+          </section>
+
+          <!-- =================================================
+                     HISTORY
+                     ================================================= -->
+
+          <section id="historyPage" class="page">
+            <div class="page-heading">
+              <div>
+                <span class="eyebrow"> ACTIVITY </span>
+
+                <h2>Riwayat Aktivitas</h2>
+
+                <p>Catatan aktivitas pengelolaan inventaris.</p>
+              </div>
+
+              <button id="clearHistory" class="btn btn-secondary">
+                🗑️ Hapus Riwayat
+              </button>
+            </div>
+
+            <div class="content-card">
+              <div id="historyList"></div>
+            </div>
+          </section>
+
+          <!-- =================================================
+                     SETTINGS
+                     ================================================= -->
+
+          <section id="settingsPage" class="page">
+            <div class="page-heading">
+              <div>
+                <span class="eyebrow"> SYSTEM </span>
+
+                <h2>Pengaturan</h2>
+
+                <p>Kelola tema dan data aplikasi.</p>
+              </div>
+            </div>
+
+            <div class="settings-grid">
+              <!-- THEME -->
+
+              <div class="content-card">
+                <div class="settings-item">
+                  <div class="settings-icon">🎨</div>
+
+                  <div class="settings-info">
+                    <h3>Tampilan</h3>
+
+                    <p>Ubah tampilan antara Light Mode dan Dark Mode.</p>
+                  </div>
+
+                  <button id="settingsThemeToggle" class="btn btn-secondary">
+                    🌙 Dark Mode
+                  </button>
+                </div>
+              </div>
+
+              <!-- EXPORT -->
+
+              <div class="content-card">
+                <div class="settings-item">
+                  <div class="settings-icon">📤</div>
+
+                  <div class="settings-info">
+                    <h3>Export Data</h3>
+
+                    <p>Simpan data inventaris dalam format JSON.</p>
+                  </div>
+
+                  <button id="exportData" class="btn btn-secondary">
+                    Export
+                  </button>
+                </div>
+              </div>
+
+              <!-- IMPORT -->
+
+              <div class="content-card">
+                <div class="settings-item">
+                  <div class="settings-icon">📥</div>
+
+                  <div class="settings-info">
+                    <h3>Import Data</h3>
+
+                    <p>Masukkan kembali data dari file JSON.</p>
+                  </div>
+
+                  <button id="importDataButton" class="btn btn-secondary">
+                    Import
+                  </button>
+
+                  <input
+                    type="file"
+                    id="importDataInput"
+                    accept=".json,application/json"
+                    hidden
+                  />
+                </div>
+              </div>
+
+              <!-- BACKUP -->
+
+              <div class="content-card">
+                <div class="settings-item">
+                  <div class="settings-icon">💾</div>
+
+                  <div class="settings-info">
+                    <h3>Backup</h3>
+
+                    <p>Cadangkan inventaris, riwayat dan tema.</p>
+                  </div>
+
+                  <button id="backupData" class="btn btn-secondary">
+                    Backup
+                  </button>
+                </div>
+              </div>
+
+              <!-- DELETE -->
+
+              <div class="content-card danger-card">
+                <div class="settings-item">
+                  <div class="settings-icon danger">⚠️</div>
+
+                  <div class="settings-info">
+                    <h3>Hapus Semua Data</h3>
+
+                    <p>Menghapus seluruh data inventaris.</p>
+                  </div>
+
+                  <button id="clearAllData" class="btn btn-danger">
+                    Hapus Semua
+                  </button>
+                </div>
+              </div>
+
+              <!-- LOGOUT -->
+
+              <div class="content-card">
+                <div class="settings-item">
+                  <div class="settings-icon">🚪</div>
+
+                  <div class="settings-info">
+                    <h3>Logout</h3>
+
+                    <p>Keluar dari akun InLib saat ini.</p>
+                  </div>
+
+                  <button id="settingsLogoutButton" class="btn btn-secondary">
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <footer class="app-footer">
+          <p>Nama Kelompok: Semoga Nilainya Bagus</p>
+        </footer>
+      </main>
+
+      <!-- =====================================================
+             MOBILE BOTTOM NAV
+             ===================================================== -->
+
+      <nav class="mobile-bottom-nav">
+        <button data-page="dashboard" class="mobile-nav-item active">
+          <span>📊</span>
+          <small>Home</small>
+        </button>
+
+        <button data-page="inventory" class="mobile-nav-item">
+          <span>📚</span>
+          <small>Data</small>
+        </button>
+
+        <button data-page="add" class="mobile-nav-item add-button">
+          <span>➕</span>
+          <small>Tambah</small>
+        </button>
+
+        <button data-page="notifications" class="mobile-nav-item">
+          <span>🔔</span>
+          <small>Alert</small>
+        </button>
+
+        <button data-page="settings" class="mobile-nav-item">
+          <span>⚙️</span>
+          <small>Setting</small>
+        </button>
+      </nav>
+    </div>
+
+    <!-- =====================================================
+         DELETE MODAL
+         ===================================================== -->
+
+    <div id="deleteModal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-icon">🗑️</div>
+
+        <h3>Hapus Inventaris?</h3>
+
+        <p>Data yang dihapus tidak dapat dikembalikan.</p>
+
+        <div class="modal-actions">
+          <button id="cancelDelete" class="btn btn-secondary">Batal</button>
+
+          <button id="confirmDelete" class="btn btn-danger">Hapus</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         TOAST
+         ===================================================== -->
+
+    <div id="toast" class="toast">
+      <div id="toastIcon" class="toast-icon">✓</div>
+
+      <div>
+        <strong id="toastTitle"> Berhasil </strong>
+
+        <p id="toastMessage">Operasi berhasil.</p>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
